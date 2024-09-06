@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast Q&A</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Podcast Q&A</h1>
+
+    <!-- Form for inputting the MP3 URL -->
+    <form id="transcription-form">
+        <label for="mp3-url">Enter MP3 File URL (Podcast):</label>
+        <input type="text" id="mp3-url" name="mp3-url">
+        <button type="submit">Transcribe</button>
+    </form>
+
+    <div id="transcription"></div>
+
+    <!-- Form for asking questions -->
+    <form id="qa-form" style="display:none;">
+        <label for="question">Ask a Question about the Podcast:</label>
+        <input type="text" id="question" name="question">
+        <button type="submit">Ask</button>
+    </form>
+
+    <div id="answer"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Handle transcription submission
+        $('#transcription-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/transcribe',
+                type: 'POST',
+                data: { mp3_url: $('#mp3-url').val() },
+                success: function(data) {
+                    $('#transcription').html(`<h2>Transcription:</h2><p>${data.transcription}</p>`);
+                    $('#qa-form').show();
+                }
+            });
+        });
+
+        // Handle Q&A submission
+        $('#qa-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/ask',
+                type: 'POST',
+                data: { transcription: $('#transcription').text(), question: $('#question').val() },
+                success: function(data) {
+                    $('#answer').html(`<h2>Answer:</h2><p>${data.answer}</p>`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
