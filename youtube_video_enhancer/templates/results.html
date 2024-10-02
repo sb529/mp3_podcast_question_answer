@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended Videos</title>
+</head>
+<body>
+    <h2>Recommended Videos:</h2>
+    <ul>
+    {% if videos %}
+        {% for video in videos %}
+            <li><a href="https://youtube.com/watch?v={{ video.id.videoId }}">{{ video.snippet.title }}</a></li>
+        {% endfor %}
+    {% else %}
+        <li>No recommendations found.</li>
+    {% endif %}
+    </ul>
+    <a href="/">Go back</a>
+</body>
+</html>
+cd

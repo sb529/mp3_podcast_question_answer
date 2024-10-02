@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Questions Across My Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Ask Questions About Any Article on My Blog</h1>
+    
+    <form id="questionForm">
+        <label for="blog_url">Substack Blog URL:</label>
+        <input type="text" id="blog_url" name="blog_url" value="https://your-substack-url.com" required><br><br>
+        
+        <label for="question">Your Question:</label>
+        <input type="text" id="question" name="question" placeholder="Ask a question" required><br><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Answer:</h2>
+    <p id="answer"></p>
+
+    <script>
+        // JavaScript to handle form submission
+        document.getElementById('questionForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Grab the values from the form
+            const blog_url = document.getElementById('blog_url').value;
+            const question = document.getElementById('question').value;
+
+            // Send the data via POST request to the Flask backend
+            try {
+                const response = await fetch('/ask_question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        blog_url: blog_url,
+                        question: question
+                    })
+                });
+
+                // Parse the JSON response
+                const result = await response.json();
+
+                // Display the answer in the "answer" paragraph
+                document.getElementById('answer').innerText = result.answer;
+
+            } catch (error) {
+                document.getElementById('answer').innerText = 'An error occurred: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

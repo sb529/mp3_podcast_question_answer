@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    color: black;
+}
+#chat-container {
+    margin: 20px auto;
+    width: 300px;
+}
+#user-input {
+    width: 100%;
+    padding: 10px;
+}
+#send-btn {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+#chat-output {
+    margin-top: 20px;
+    text-align: left;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+    height: 200px;
+    overflow-y: scroll;
+}

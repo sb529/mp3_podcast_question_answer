@@ -6,9 +6,8 @@ import time
 app = Flask(__name__)
 
 # AssemblyAI and OpenAI API Keys
-ASSEMBLYAI_API_KEY = 'Insert API Key'
-OPENAI_API_KEY = 'Insert API Key'
-
+ASSEMBLYAI_API_KEY = '134ae195db7a4df9bc50ae91daaab3fc'
+OPENAI_API_KEY = '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'
 
 # Set OpenAI API key
 openai.api_key = OPENAI_API_KEY

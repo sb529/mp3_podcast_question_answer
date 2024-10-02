@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Doodlr</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+            max-width: 600px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        
+        /* Hide elements initially */
+        #create_room, #join_room, #waiting_room {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landing_page" style="display: block;">
+        <h1>Welcome to Personal Doodlr!</h1>
+        <p>Choose an option to get started:</p>
+        <button onclick="showCreateRoom()">Create a Room</button>
+        <button onclick="showJoinRoom()">Join a Room</button>
+    </div>
+
+    <!-- Create Room Page -->
+    <div id="create_room">
+        <h2>Create a Private Room</h2>
+        
+        <div class="form-group">
+            <label for="host_display_name">Display Name:</label>
+            <input type="text" id="host_display_name" placeholder="Enter your name">
+        </div>
+        
+        <div class="form-group">
+            <label for="num_rounds">Number of Rounds:</label>
+            <input type="number" id="num_rounds" min="1" max="10" value="5">
+        </div>
+        
+        <div class="form-group">
+            <label for="round_time">Drawing Time per Round (seconds):</label>
+            <input type="number" id="round_time" min="10" max="180" value="60">
+        </div>
+        
+        <div class="form-group">
+            <label for="num_players">Number of Players:</label>
+            <input type="number" id="num_players" min="2" max="10" value="4" placeholder="Enter number of players">
+        </div>
+
+        <div class="form-group">
+            <label for="word_customization">Custom Word List (optional):</label>
+            <textarea id="word_customization" rows="3" placeholder="Enter custom words or themes (optional)"></textarea>
+        </div>
+
+        <button onclick="createRoom()">Create Room</button>
+        <button onclick="goBackToLanding()">Back to Landing Page</button>
+    </div>
+
+    <!-- Join Room Page -->
+    <div id="join_room">
+        <h2>Join a Room</h2>
+        
+        <div class="form-group">
+            <label for="player_display_name">Display Name:</label>
+            <input type="text" id="player_display_name" placeholder="Enter your name">
+        </div>
+        
+        <div class="form-group">
+            <label for="room_code">Room Code:</label>
+            <input type="text" id="room_code" placeholder="Enter room code">
+        </div>
+
+        <button onclick="joinRoom()">Join Room</button>
+        <button onclick="goBackToLanding()">Back to Landing Page</button>
+    </div>
+
+    <!-- Waiting Room for Players -->
+    <div id="waiting_room">
+        <h2>Waiting Room</h2>
+        <p>Room Code: <span id="room_code_display"></span></p>
+        <p>Waiting for other players to join...</p>
+
+        <!-- Only the host should see the Start Game button -->
+        <button id="start_game_button" onclick="startGame()">Start Game</button>
+    </div>
+
+    <!-- Drawing Tools (for the drawer) -->
+    <div id="drawing_tools" style="display: none;">
+        <h3>You're the drawer! Start drawing:</h3>
+        <canvas id="canvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+        <!-- Add your drawing canvas logic here -->
+    </div>
+
+    <!-- HTML for Word Selection (Drawer Only) -->
+    <div id="word_selection" style="display: none;">
+        <h3>Select a word to draw:</h3>
+        <button id="word_option_1" onclick="selectWord(1)"></button>
+        <button id="word_option_2" onclick="selectWord(2)"></button>
+        <button id="word_option_3" onclick="selectWord(3)"></button>
+    </div>
+
+    <!-- Guessing Input (for other players) -->
+    <div id="guess_input" style="display: none;">
+        <h3>Guess the word:</h3>
+        <input type="text" id="guess" placeholder="Enter your guess">
+        <button onclick="submitGuess()">Submit Guess</button>
+    </div>
+
+
+    <script>
+        var socket = io();
+        var playerName = "";  // Global variable to store player's name
+        var roomCode = "";    // Global variable to store room code
+        var isHost = false; // Keep track of whether this player is the host    
+        // Show the create room form
+        function showCreateRoom() {
+            document.getElementById('landing_page').style.display = 'none';
+            document.getElementById('create_room').style.display = 'block';
+        }
+
+    
+       // Show the join room form
+        function showJoinRoom() {
+            document.getElementById('landing_page').style.display = 'none';
+            document.getElementById('join_room').style.display = 'block';
+        }
+    
+        // Go back to the landing page
+        function goBackToLanding() {
+            document.getElementById('create_room').style.display = 'none';
+            document.getElementById('join_room').style.display = 'none';
+            document.getElementById('landing_page').style.display = 'block';
+        }
+    
+        function createRoom() {
+            var hostName = document.getElementById('host_display_name').value;
+            var rounds = document.getElementById('num_rounds').value;
+            var time = document.getElementById('round_time').value;
+            var players = document.getElementById('num_players').value;
+            var customization = document.getElementById('word_customization').value;
+
+            socket.emit('create_room', {
+                hostName: hostName, 
+                rounds: rounds, 
+                time: time, 
+                players: players, 
+                customization: customization
+        });
+
+            isHost = true;  // Mark this player as the host
+        }
+
+    
+         function joinRoom() {
+        playerName = document.getElementById('player_display_name').value;
+        roomCode = document.getElementById('room_code').value;  // Set the room code globally
+
+        console.log("Joining room with player name: ", playerName, " and room code: ", roomCode);
+        socket.emit('join_room', { playerName: playerName, roomCode: roomCode });
+    }
+
+
+    
+        // Listen for room creation response from the server
+        socket.on('room_created', function(data) {
+            document.getElementById('create_room').style.display = 'none';
+            document.getElementById('waiting_room').style.display = 'block';
+            document.getElementById('room_code_display').innerText = data.roomCode;
+
+            // Show the Start Game button only to the host
+            if (isHost) {
+                document.getElementById('start_game_button').style.display = 'block';
+            }
+         });
+
+
+       // Listen for room join success
+       socket.on('room_joined', function(data) {
+            document.getElementById('join_room').style.display = 'none';
+            document.getElementById('waiting_room').style.display = 'block';
+            document.getElementById('room_code_display').innerText = data.roomCode;
+
+            if (data.playerName === data.players[0]) { // The first player in the players array is the host
+                isHost = true;
+                document.getElementById('start_game_button').style.display = 'block';
+            }
+         });
+
+         // Wait for all players to join
+        socket.on('all_players_joined', function() {
+            if (isHost) {
+                document.getElementById('start_game_button').disabled = false;  // Enable the Start Game button for the host
+            }
+        });
+
+        // Only the host can start the game
+        function startGame() {
+            var roomCode = document.getElementById('room_code_display').innerText;
+            socket.emit('start_game', { roomCode: roomCode, playerName: playerName });
+        }
+
+
+        // Handle errors from the server
+        socket.on('error', function(data) {
+            console.log("Error: ", data.message);
+            alert("Error: " + data.message);
+        });
+
+         // Start game logic, only the host can start the game
+         function startGame() {
+            var roomCode = document.getElementById('room_code_display').innerText;
+        socket.emit('start_game', { roomCode: roomCode });
+        }
+        
+        // Listen for game start event
+         // Listen for the game to start
+        socket.on('game_start', function(data) {
+            console.log("Game starting! Drawer is:", data.drawer);
+            document.getElementById('waiting_room').style.display = 'none';
+            startGameUI(data.drawer);
+        });
+        
+        // Function to handle game UI transition
+        function startGameUI(drawer) {
+            if (drawer === playerName) {
+                document.getElementById('drawing_tools').style.display = 'block';  // Show drawing tools for the drawer
+            } else {
+                document.getElementById('guess_input').style.display = 'block';  // Show guessing input for others
+            }
+        }
+
+        // If the current player is the host, show the Start Game button
+        if (data.playerName === data.players[0]) { // Assuming the host is the first player
+            isHost = true;
+            document.getElementById('start_game_button').style.display = 'block';
+        }
+
+        // Handle round start
+        socket.on('round_start', function(data) {
+        var drawer = data.drawer;
+        if (drawer === playerName) {
+            // Show word selection UI for the drawer
+            startDrawing(data.word_options);
+        } else {
+            // Show waiting message for other players
+            showWaitingForDrawing();
+        }
+    });
+
+    // Socket connection error handling
+    socket.on('connect_error', function(err) {
+            console.log("Socket connection error: ", err);
+        });
+
+     
+    // Handle word selection by the drawer
+    function selectWord(option) {
+        var selectedWord = document.getElementById('word_option_' + option).innerText;
+        console.log("Selected word:", selectedWord);
+
+        // Emit the selected word to the server
+        socket.emit('choose_word', { roomCode: roomCode, chosenWord: selectedWord });
+
+        // Hide word selection and show drawing tools
+        document.getElementById('word_selection').style.display = 'none';
+        document.getElementById('drawing_tools').style.display = 'block'; // Show drawing tools
+    }
+        // Listen for word options from the server (only for the drawer)
+     socket.on('word_selection', function(data) {
+            document.getElementById('word_selection').style.display = 'block'; // Show word selection
+            document.getElementById('word_option_1').innerText = data.word_options[0];
+            document.getElementById('word_option_2').innerText = data.word_options[1];
+            document.getElementById('word_option_3').innerText = data.word_options[2];
+    });
+
+        // Start drawing UI for the drawer
+    function startDrawing(words) {
+        document.getElementById('drawing_tools').style.display = 'block';
+        // Add UI logic here for the drawer to select a word and start drawing
+    }
+
+    // UI for waiting players
+    function showWaitingForDrawing() {
+        document.getElementById('waiting_for_drawing').style.display = 'block';
+    }
+
+    // After the drawer selects a word, start the drawing phase
+    socket.on('drawing_phase', function(data) {
+        var drawer = data.drawer;
+        if (drawer === playerName) {
+            // Show drawing canvas to the drawer
+            document.getElementById('drawing_tools').style.display = 'block';
+            document.getElementById('guess_input').style.display = 'none';
+        } else {
+            // Show guessing input for other players
+            document.getElementById('drawing_tools').style.display = 'none';
+            document.getElementById('guess_input').style.display = 'block';
+        }
+    });
+
+
+    function startDrawingCanvas() {
+        document.getElementById('canvas').style.display = 'block';
+        // Add drawing canvas logic here
+    }
+
+    function startGuessingPhase() {
+        document.getElementById('guess_input').style.display = 'block';
+    }
+
+    function submitGuess() {
+        var guess = document.getElementById('guess').value;
+        socket.emit('submit_guess', { roomCode: roomCode, guess: guess });
+        }
+        
+    socket.on('guess_correct', function(data) {
+            alert(data.guesser + " guessed the word correctly!");
+            // Update scores here
+    });
+
+    socket.on('guess_incorrect', function() {
+        // Optionally update UI for incorrect guesses
+    });
+
+    socket.on('round_start', function(data) {
+        if (data.drawer === playerName) {
+            startDrawing(data.word_options);
+        } else {
+            showWaitingForDrawing();
+            }
+        });
+
+    </script>
+    
+</body>
+</html>
