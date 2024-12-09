@@ -1,0 +1,29 @@
+About the job
+About The Role
+
+As a Senior Product Manager for Customer Obsession, you will lead Generative AI experiences for our customers looking for Uber's support (Riders, Eaters, Drivers, Couriers, Merchants, etc.). Your primary mission will be to leverage best-in-class AI/ LLMs to help customers self-service their issues while ensuring high customer engagement with a magical experience. You will use best-of-breed technologies and innovative design thinking to deliver solutions at a scale that has never been done before in the industry. Furthermore, you will lead several key initiatives, such as annual planning & business reviews, collaborating closely with senior leaders throughout the company.
+
+Key Responsibilities
+
+ Product Leadership : Define and execute the product strategy and roadmap for AI-powered customer support assistants or AI platforms, ensuring alignment with company objectives. 
+ Customer Focus: Advocate for the end-user by integrating design thinking and user research, ensuring AI products deliver delightful experiences. 
+ Execution: Deeply engage with engineering teams to align and drive the team to achieve ambitious goals, maintaining high standards in product development and execution. 
+ Data-Driven Decisions : Use data to prioritize features, make informed trade-offs, and continuously improve product performance. 
+ Cross-Functional Collaboration: Work closely with engineering, design, and data science teams to develop scalable and reliable AI solutions-lead investments in research, prototyping, and experimentation. 
+ Executive Communication: Present clear and compelling progress updates to senior leadership, aligning stakeholders and securing support. 
+
+ Basic Qualifications 
+
+ Experience: 5+ years of product management experience, with at least 2 years focused on AI-driven products, especially customer-facing AI assistants or AI co-pilots. 
+ Technical Expertise: Deep understanding of AI/ML technologies, particularly in deploying and fine-tuning LLMs. Experience working closely with machine learning engineers to iterate on models, improve accuracy, and reduce issues like hallucinations. Familiarity with data pipelines, model training, and AI/ML infrastructure is essential. 
+ Proven Track Record: Demonstrated success in taking AI products from concept to launch, focusing on solving real customer problems-experience in managing the lifecycle of AI products. 
+ Communication: Exceptional ability to articulate complex AI concepts and product strategies to various audiences, from engineers to senior executives. Experience in crafting executive-level presentations that convey product vision, progress, and business impact. 
+
+ Preferred Qualifications: 
+
+ Education: A degree in Computer Science, Engineering, or a related field. Advanced degrees are a plus (Esp in AI/ML). 
+ Design Thinking: Experience with user-centered design methodologies, including user research and iterative testing. 
+ Data Depth : Expertise in data analytics to inform product decisions and validate hypotheses. 
+ Startup Mentality: Comfortable with ambiguity, making fast-paced decisions, adapting to changes, and able to manage multiple priorities under pressure. 
+
+For San Francisco, CA-based roles: The base salary range for this role is USD$174,000 per year - USD$193,500 per year. For Sunnyvale, CA-based roles: The base salary range for this role is USD$174,000 per year - USD$193,500 per year. For all US locations, you will be eligible to participate in Uber's bonus program, and may be offered an equity award & other types of comp. You will also be eligible for various benefits. More details can be found at the following link https://www.uber.com/careers/benefits.

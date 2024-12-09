@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Progress</title>
+</head>
+<body>
+    <h1>{{ user.username }}'s Progress</h1>
+    <p>Points: {{ user.points }}</p>
+    <p>Streak: {{ user.streak }}</p>
+    <h2>Calorie Logs</h2>
+    <ul>
+        {% for log in logs %}
+            <li>{{ log.date.strftime('%Y-%m-%d %H:%M:%S') }} - {{ log.calories }} calories</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>
